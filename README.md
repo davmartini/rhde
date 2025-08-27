@@ -4,7 +4,7 @@
 
 1. Install necessary packages :
 ```
-sudo dnf install -y container-tools
+sudo dnf install -y container-tools virt-install
 ```
 
 2. Login to Red hat Quay & Red Hat Registry
@@ -35,5 +35,10 @@ podman build -t localhost/rhde:10 .
 ```
 podman tag localhost/rhde:10 quay.io/david_martini/rhde10:0.1
 podman push quay.io/david_martini/rhde10:0.1
+```
+
+6. Create an ISO image with Bootc Image Builder
+```
+sudo podman run --rm -it --privileged --pull=newer --security-opt label=type:unconfined_t -v /var/lib/containers/storage:/var/lib/containers/storage -v $(pwd)/config.toml:/config.toml     -v $(pwd)/output:/output registry.redhat.io/rhel10/bootc-image-builder:latest --type iso --config /config.toml localhost/test
 ```
 
