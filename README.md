@@ -1,0 +1,17 @@
+# RHDE Lab
+
+1. Install necessary packages :
+```
+sudo dnf install -y container-tools
+```
+
+2. Create a sample Containerfile
+```
+cat Containerfile
+FROM registry.redhat.io/rhel10/rhel-bootc:latest
+RUN dnf -y install cloud-init && \
+    ln -s ../cloud-init.target /usr/lib/systemd/system/default.target.wants && \
+    ln -s ../cloud-init.target /usr/lib/systemd/system/default.target.wants && \
+    dnf clean all
+    dnf clean all
+```
