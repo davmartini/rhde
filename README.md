@@ -13,6 +13,11 @@ podman login quay.io
 podman login registry.redhat.io
 ```
 
+3. Install the bootc-image-builder:
+```
+sudo podman pull registry.redhat.io/rhel10/bootc-image-builder
+```
+
 3. Create a sample Containerfile
 ```
 FROM registry.redhat.io/rhel10/rhel-bootc:latest
