@@ -14,38 +14,78 @@ sudo subscription-manager repos --enable rhacm-2.14-for-rhel-9-x86_64-rpms
 sudo dnf install -y container-tools virt-install flightctl
 ```
 
-2. Login to Red hat Quay & Red Hat Registry
+2. Login to your RHACM cluster
 ```
-podman login quay.io
+flightctl login --username=admin01 --password=<password> https://api.apps.ocp.drkspace.fr --insecure-skip-tls-verify
+``` 
+
+3. Request a new certificat
+```
+flightctl certificate request --signer=enrollment --expiration=365d --output=embedded > config.yaml
+```
+
+
+4. Login to Red Hat Registry
+```
 podman login registry.redhat.io
 ```
 
-3. Install the bootc-image-builder:
+5. Create a sample Containerfile
 ```
-sudo podman pull registry.redhat.io/rhel10/bootc-image-builder
-```
+FROM registry.redhat.io/rhel9/rhel-bootc:latest
 
-3. Create a sample Containerfile
-```
-FROM registry.redhat.io/rhel10/rhel-bootc:latest
-RUN dnf -y install cloud-init && \
-    ln -s ../cloud-init.target /usr/lib/systemd/system/default.target.wants && \
-    dnf clean all
+RUN dnf --enablerepo=rhacm-2.14-for-rhel-9-x86_64-rpms -y install flightctl-agent && \
+    dnf -y clean all && \
+    systemctl enable flightctl-agent.service && \
+    systemctl mask bootc-fetch-apply-updates.timer
+
+ADD config.yaml /etc/flightctl/
 ```
 
 4. Build your image
 ```
-podman build -t localhost/rhde:10 .
+podman build -t quay.io/david_martini/rhde9:0.1 .
 ```
 
-5. Tag and push your new image on your registry
+5. Generate new signature with sigstor
 ```
-podman tag localhost/rhde:10 quay.io/david_martini/rhde10:0.1
-podman push quay.io/david_martini/rhde10:0.1
+skopeo generate-sigstore-key --output-prefix signingkey
 ```
 
-6. Create an ISO image with Bootc Image Builder
+6. Configure podman to uplaod signature on registry
 ```
-sudo podman run --rm -it --privileged --pull=newer --security-opt label=type:unconfined_t -v /var/lib/containers/storage:/var/lib/containers/storage -v $(pwd)/config.toml:/config.toml     -v $(pwd)/output:/output registry.redhat.io/rhel10/bootc-image-builder:latest --type iso --config /config.toml localhost/test
+sudo tee "/etc/containers/registries.d/quay.io.yaml" > /dev/null <<EOF
+docker:
+    quay.io:
+        use-sigstore-attachments: true
+EOF
+``` 
+
+7. Login to quay
+```
+podman login quay.io
+```
+
+8. Push your image on your regitry
+```
+podman push \
+    --sign-by-sigstore-private-key ./signingkey.private \
+    quay.io/david_martini/rhde9:0.1
+```
+
+9. Create a output directory
+```
+mkdir -p output
+```
+
+10. Create an ISO image with Bootc Image Builder
+```
+podman run --rm -it --privileged --pull=newer \
+    --security-opt label=type:unconfined_t \
+    -v "${PWD}/output":/output \
+    -v /var/lib/containers/storage:/var/lib/containers/storage \
+    registry.redhat.io/rhel9/bootc-image-builder:latest \
+    --type iso \
+    quay.io/david_martini/rhde9:0.1
 ```
 
