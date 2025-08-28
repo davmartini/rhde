@@ -16,7 +16,7 @@ sudo dnf install -y container-tools virt-install flightctl
 
 2. Login to your RHACM cluster
 ```
-flightctl login --username=admin01 --password=<password> https://api.ocp.drkspace.fr --insecure-skip-tls-verify
+flightctl login --username=admin01 --password=<password> https://api.ocp.drkspace.fr:6443 --insecure-skip-tls-verify
 ``` 
 
 3. Request a new certificat
