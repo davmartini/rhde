@@ -16,7 +16,7 @@ sudo dnf install -y container-tools virt-install flightctl
 
 2. Login to your RHACM cluster
 ```
-flightctl login --username=admin01 --password=<password> https://api.apps.ocp.drkspace.fr --insecure-skip-tls-verify
+flightctl login --username=admin01 --password=<password> https://api.ocp.drkspace.fr --insecure-skip-tls-verify
 ``` 
 
 3. Request a new certificat
@@ -80,7 +80,7 @@ mkdir -p output
 
 10. Create an ISO image with Bootc Image Builder
 ```
-podman run --rm -it --privileged --pull=newer \
+sudo podman run --rm -it --privileged --pull=newer \
     --security-opt label=type:unconfined_t \
     -v "${PWD}/output":/output \
     -v /var/lib/containers/storage:/var/lib/containers/storage \
