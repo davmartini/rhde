@@ -1,17 +1,10 @@
-# RHDE Lab with Edge Manager
-
-## What you need 
-
-* flightctl CLI to manage Edge Manager certificat and device enrolment
-* bootc image (RHEL9 or 10) available on registry.redhat.io
-* bootc-image-builder image to create a bootable bootc image (iso, raw, qcow2, etc...)
+# RHDE Lab
 
 ## Create your firts image
 
 1. Install necessary packages :
 ```
-sudo subscription-manager repos --enable rhacm-2.14-for-rhel-9-x86_64-rpms
-sudo dnf install -y container-tools virt-install flightctl
+sudo dnf install -y container-tools virt-install
 ```
 
 2. Login to Red hat Quay & Red Hat Registry
