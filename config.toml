@@ -5,4 +5,10 @@ keyboard fr
 timezone --utc Europe/Paris
 
 user --name user --password pass --plaintext --groups wheel
+
+network --bootproto=dhcp
+
+zerombr
+clearpart --all --initlabel
+autopart --type=plain --nohome --noboot
 """
