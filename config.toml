@@ -1,0 +1,8 @@
+[customizations.installer.kickstart]
+contents= """
+lang en_GB.UTF-8
+keyboard fr
+timezone --utc Europe/Paris
+
+user --name user --password pass --plaintext --groups wheel
+"""

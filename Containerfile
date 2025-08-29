@@ -7,6 +7,5 @@ RUN dnf --enablerepo=rhacm-2.14-for-rhel-9-x86_64-rpms -y install flightctl-agen
 
 RUN useradd rhde
 
-ADD authorized_keys /var/home/rhde/authorized_keys
 
 ADD config.yaml /etc/flightctl/

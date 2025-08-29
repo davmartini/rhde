@@ -6,6 +6,13 @@
 * bootc image (RHEL9 or 10) available on registry.redhat.io
 * bootc-image-builder image to create a bootable bootc image (iso, raw, qcow2, etc...)
 
+
+## File description
+
+* Containerfile = bootc image definition
+* kernel.toml = kernel argument for bootc image
+* config.toml = kickstart extra configuration for bootc ISO image
+
 ## Create your firts image
 
 1. Install necessary packages :
@@ -83,9 +90,11 @@ mkdir -p output
 sudo podman run --rm -it --privileged --pull=newer \
     --security-opt label=type:unconfined_t \
     -v "${PWD}/output":/output \
+    -v $(pwd)/config.toml:/config.toml \
     -v /var/lib/containers/storage:/var/lib/containers/storage \
     registry.redhat.io/rhel9/bootc-image-builder:latest \
     --type iso \
-    quay.io/david_martini/rhde9:0.1
+    --config /config.toml \
+    quay.io/david_martini/rhde9:0.1 
 ```
 
