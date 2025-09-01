@@ -8,6 +8,8 @@ user --name user --password pass --plaintext --groups wheel
 
 network --bootproto=dhcp
 
+selinux --disabled
+
 zerombr
 clearpart --all --initlabel
 autopart --type=plain --fstype=xfs --nohome
