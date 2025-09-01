@@ -10,5 +10,5 @@ network --bootproto=dhcp
 
 zerombr
 clearpart --all --initlabel
-autopart --type=plain --nohome --noboot
+autopart --type=plain --fstype=xfs --nohome
 """
