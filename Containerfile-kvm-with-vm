@@ -1,0 +1,25 @@
+FROM registry.redhat.io/rhel9/rhel-bootc:latest
+
+RUN dnf -y update && \
+    dnf --enablerepo=rhacm-2.14-for-rhel-9-x86_64-rpms -y install flightctl-agent && \
+    dnf -y clean all && \
+    systemctl enable flightctl-agent.service && \
+    systemctl mask bootc-fetch-apply-updates.timer && \
+    dnf -y install qemu-kvm libvirt virt-install virt-viewer cockpit cockpit-machines && \
+    for drv in qemu network nodedev nwfilter secret storage interface; do sudo systemctl enable virt${drv}d{,-ro,-admin}.socket; done && \
+    sudo systemctl enable cockpit.socket
+
+RUN sudo mkdir -p /var/vms/
+
+ADD guest-vm/guest.qcow2 /var/vms/
+
+RUN virt-install -h
+
+RUN virt-install \
+    --name vm01 --memory 1024 --vcpus 1 \
+    --osinfo rhel9.6 --import \
+    --disk /var/vms/guest.qcow2
+
+RUN virsh autostart vm01
+
+ADD config.yaml /etc/flightctl/
